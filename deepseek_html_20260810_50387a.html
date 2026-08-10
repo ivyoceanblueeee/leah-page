@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>My Journey with Leah · Interactive</title>
+    <style>
+        :root {
+            --bg-deep: #0d0812;
+            --bg-card: #1a0f1f;
+            --text-primary: #e8dce8;
+            --text-secondary: #b8a8b8;
+            --accent-rose: #ff6b9d;
+            --accent-pink: #ff4088;
+            --accent-glow: #ff8ab5;
+            --track-dark: #2a1a2a;
+            --track-light: #3d2035;
+            --node-completed: #ff5c8a;
+            --node-current: #ff4088;
+            --node-pending: #3d2a3a;
+            --golden: #f0c060;
+            --font-display: 'Georgia', 'Noto Serif SC', 'STSong', 'Songti SC', 'SimSun', 'Times New Roman', serif;
+            --font-body: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(120, 40, 80, 0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 60%, rgba(60, 20, 50, 0.3) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 85%, rgba(100, 30, 60, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 10% 70%, rgba(40, 15, 35, 0.35) 0%, transparent 45%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 星空层 */
+        .stars-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle var(--dur) ease-in-out infinite;
+            animation-delay: var(--delay);
+            opacity: 0;
+        }
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 0.9;
+                transform: scale(1.6);
+            }
+            60% {
+                opacity: 0.2;
+                transform: scale(0.7);
+            }
+            85% {
+                opacity: 0.7;
+                transform: scale(1.3);
+            }
+        }
+
+        /* 飘落爱心层 */
+        .hearts-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .falling-heart {
+            position: absolute;
+            top: -60px;
+            font-size: var(--size);
+            color: var(--heart-color);
+            opacity: 0;
+            animation: fallHeart var(--fall-dur) var(--fall-delay) linear infinite;
+            user-select: none;
+            filter: blur(0.5px);
+            will-change: transform, opacity;
+        }
+        @keyframes fallHeart {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.7;
+                transform: translateY(30px) translateX(5px) rotate(10deg) scale(0.9);
+            }
+            15% {
+                opacity: 0.55;
+                transform: translateY(80px) translateX(-15px) rotate(-8deg) scale(1);
+            }
+            30% {
+                opacity: 0.5;
+                transform: translateY(180px) translateX(20px) rotate(15deg) scale(0.8);
+            }
+            50% {
+                opacity: 0.35;
+                transform: translateY(350px) translateX(-25px) rotate(-12deg) scale(0.7);
+            }
+            70% {
+                opacity: 0.2;
+                transform: translateY(520px) translateX(15px) rotate(8deg) scale(0.55);
+            }
+            85% {
+                opacity: 0.08;
+                transform: translateY(650px) translateX(-8px) rotate(-5deg) scale(0.4);
+            }
+            100% {
+                transform: translateY(105vh) translateX(0px) rotate(0deg) scale(0.25);
+                opacity: 0;
+            }
+        }
+
+        /* 主容器 */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 820px;
+            background: rgba(22, 10, 26, 0.7);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 150, 180, 0.15);
+            box-shadow:
+                0 8px 60px rgba(0, 0, 0, 0.55),
+                0 2px 20px rgba(255, 100, 140, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            padding: 48px 44px 44px;
+            margin: 20px;
+            transition: all var(--transition-smooth);
+        }
+        .main-container:hover {
+            box-shadow:
+                0 12px 70px rgba(0, 0, 0, 0.6),
+                0 4px 30px rgba(255, 100, 140, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 150, 180, 0.25);
+        }
+
+        /* 引导提示条 */
+        .guide-banner {
+            background: rgba(255, 80, 130, 0.12);
+            border: 1px solid rgba(255, 150, 180, 0.35);
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffb8d0;
+            font-size: 0.9rem;
+            letter-spacing: 0.03em;
+            transition: opacity 0.4s ease, transform 0.3s ease;
+            position: relative;
+            z-index: 5;
+        }
+        .guide-banner.hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            margin-bottom: 0;
+            height: 0;
+            padding: 0 18px;
+            border-width: 0;
+            overflow: hidden;
+        }
+        .guide-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .guide-emoji {
+            font-size: 1.3rem;
+        }
+        .guide-close {
+            background: none;
+            border: none;
+            color: rgba(255, 200, 220, 0.8);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 6px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .guide-close:hover {
+            color: #ffffff;
+        }
+
+        /* 标题区 */
+        .header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .header .pretitle {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 400;
+            opacity: 0.75;
+        }
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            letter-spacing: 0.03em;
+            margin: 0 0 4px;
+            line-height: 1.2;
+        }
+        .header h1 .name-leah {
+            background: linear-gradient(135deg, #ff7aa2 0%, #ff4088 40%, #e04070 70%, #ff6088 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmerName 4s ease-in-out infinite;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        @keyframes shimmerName {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 100% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            75% {
+                background-position: 0% 100%;
+            }
+        }
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* 百分比展示 */
+        .percentage-display {
+            text-align: center;
+            margin: 20px 0 10px;
+        }
+        .percentage-number {
+            font-family: var(--font-display);
+            font-size: 4.5rem;
+            font-weight: 700;
+            background: linear-gradient(180deg, #ffb8d0 0%, #ff5c8a 60%, #d94068 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+            line-height: 1;
+            display: inline-block;
+            animation: pulsePercent 3s ease-in-out infinite;
+        }
+        @keyframes pulsePercent {
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(1.25);
+            }
+        }
+        .percentage-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-top: -2px;
+        }
+
+        /* 进度条 */
+        .progress-wrapper {
+            position: relative;
+            margin: 32px 0 50px;
+            padding: 0 10px;
+        }
+        .track-full {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            right: 18px;
+            height: 4px;
+            background: var(--track-dark);
+            border-radius: 2px;
+            transform: translateY(-50%);
+            z-index: 0;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        .track-progress {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff8aab 0%, #ff4d7a 50%, #e9406a 100%);
+            border-radius: 2px;
+            transform: translateY(-50%);
+            z-index: 1;
+            transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+            box-shadow: 0 0 12px rgba(255, 80, 130, 0.5), 0 0 30px rgba(255, 70, 120, 0.25);
+        }
+        .track-progress::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #ff6088;
+            border-radius: 50%;
+            box-shadow: 0 0 14px rgba(255, 90, 140, 0.8), 0 0 28px rgba(255, 70, 130, 0.5);
+            animation: trackGlow 2s ease-in-out infinite;
+        }
+        @keyframes trackGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(255, 90, 140, 0.6), 0 0 22px rgba(255, 70, 130, 0.35);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 90, 140, 1), 0 0 40px rgba(255, 70, 130, 0.7);
+            }
+        }
+        .nodes-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            padding: 0 4px;
+        }
+        .node-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+            transition: transform var(--transition-smooth);
+            user-select: none;
+        }
+        .node-group:hover {
+            transform: translateY(-3px);
+        }
+        .node-dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+            transition: all var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .node-dot.completed {
+            background: var(--node-completed);
+            box-shadow: 0 0 14px rgba(255, 90, 140, 0.5), 0 0 30px rgba(255, 70, 120, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .node-dot.completed::after {
+            content: '♥';
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            position: absolute;
+            line-height: 1;
+        }
+        .node-dot.current {
+            background: var(--node-current);
+            width: 34px;
+            height: 34px;
+            box-shadow: 0 0 22px rgba(255, 70, 130, 0.75), 0 0 50px rgba(255, 60, 120, 0.45), 0 0 80px rgba(255, 50, 110, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.35);
+            animation: currentPulse 2.2s ease-in-out infinite;
+        }
+        @keyframes currentPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 18px rgba(255, 70, 130, 0.6), 0 0 40px rgba(255, 60, 120, 0.35), 0 0 65px rgba(255, 50, 110, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 32px rgba(255, 70, 130, 1), 0 0 70px rgba(255, 60, 120, 0.65), 0 0 100px rgba(255, 50, 110, 0.35);
+                border-color: rgba(255, 255, 255, 0.6);
+            }
+        }
+        .node-dot.current::after {
+            content: '';
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 120, 160, 0.5);
+            animation: rippleRing 2.2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes rippleRing {
+            0%,
+            100% {
+                width: 38px;
+                height: 38px;
+                opacity: 0.5;
+                border-color: rgba(255, 120, 160, 0.55);
+            }
+            50% {
+                width: 52px;
+                height: 52px;
+                opacity: 0;
+                border-color: rgba(255, 120, 160, 0);
+            }
+        }
+        .node-dot.pending {
+            background: var(--node-pending);
+            border: 2px solid rgba(180, 150, 170, 0.3);
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+        }
+        .node-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 10px;
+            max-width: 90px;
+            line-height: 1.3;
+            letter-spacing: 0.02em;
+            opacity: 0.7;
+            transition: all var(--transition-smooth);
+            font-weight: 400;
+            pointer-events: none;
+        }
+        .node-group:hover .node-label {
+            opacity: 1;
+            color: #d0b8d0;
+        }
+        .node-group.current-group .node-label {
+            color: #ffb0c8;
+            opacity: 1;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-shadow: 0 0 10px rgba(255, 140, 170, 0.4);
+        }
+        .node-group.completed-group .node-label {
+            color: #c8a0b0;
+            opacity: 0.85;
+        }
+
+        /* 状态卡片 */
+        .status-card {
+            text-align: center;
+            background: rgba(30, 14, 30, 0.6);
+            border-radius: 20px;
+            padding: 20px 28px;
+            border: 1px solid rgba(255, 150, 180, 0.12);
+            margin-top: 8px;
+            transition: all var(--transition-smooth);
+        }
+        .status-card .status-emoji {
+            font-size: 2rem;
+            margin-bottom: 4px;
+            animation: floatEmoji 3s ease-in-out infinite;
+        }
+        @keyframes floatEmoji {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+        .status-card .status-text {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            letter-spacing: 0.03em;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        .status-card .status-highlight {
+            color: #ffb0c8;
+            font-weight: 600;
+        }
+
+        /* 反馈弹窗 */
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .feedback-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .feedback-popup {
+            background: rgba(22, 10, 26, 0.9);
+            border: 1px solid rgba(255, 150, 180, 0.3);
+            border-radius: 28px;
+            padding: 32px 28px 28px;
+            max-width: 360px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 100, 160, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .feedback-overlay.active .feedback-popup {
+            transform: scale(1);
+        }
+        .feedback-close {
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: rgba(255, 200, 220, 0.7);
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+            transition: color 0.2s;
+            z-index: 2;
+        }
+        .feedback-close:hover {
+            color: #ffb0c8;
+        }
+        .feedback-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+            animation: floatEmoji 2.5s ease-in-out infinite;
+        }
+        .feedback-message {
+            font-family: var(--font-body);
+            font-size: 1.15rem;
+            color: #f0d0e0;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            word-break: break-word;
+        }
+        .feedback-hint {
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: rgba(200, 160, 180, 0.5);
+            letter-spacing: 0.04em;
+        }
+
+        /* 移动端 */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 32px 20px 28px;
+                border-radius: 24px;
+                margin: 12px;
+                width: 94%;
+                max-width: 440px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .header .subtitle {
+                font-size: 0.85rem;
+            }
+            .percentage-number {
+                font-size: 3.2rem;
+            }
+            .progress-wrapper {
+                margin: 24px 0 36px;
+                padding: 0;
+            }
+            .track-full,
+            .track-progress {
+                display: none;
+            }
+            .nodes-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+                position: relative;
+                padding-left: 38px;
+            }
+            .vertical-track {
+                display: block;
+                position: absolute;
+                left: 16px;
+                top: 13px;
+                bottom: 13px;
+                width: 3px;
+                background: var(--track-dark);
+                border-radius: 1.5px;
+                z-index: 0;
+            }
+            .vertical-track-fill {
+                display: block;
+                position: absolute;
+                left: 16px;
+                top: 13px;
+                width: 3px;
+                background: linear-gradient(180deg, #ff8aab 0%, #ff4d7a 50%, #e9406a 100%);
+                border-radius: 1.5px;
+                z-index: 1;
+                transition: height 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+                box-shadow: 0 0 10px rgba(255, 80, 130, 0.5);
+            }
+            .vertical-track-fill::after {
+                content: '';
+                position: absolute;
+                bottom: -4px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 9px;
+                height: 9px;
+                background: #ff6088;
+                border-radius: 50%;
+                box-shadow: 0 0 14px rgba(255, 90, 140, 0.8), 0 0 28px rgba(255, 70, 130, 0.5);
+                animation: trackGlow 2s ease-in-out infinite;
+            }
+            .node-group {
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+                padding: 13px 0;
+                width: 100%;
+                z-index: 3;
+            }
+            .node-dot {
+                width: 22px;
+                height: 22px;
+                font-size: 9px;
+            }
+            .node-dot.current {
+                width: 30px;
+                height: 30px;
+            }
+            .node-dot.current::after {
+                width: 40px;
+                height: 40px;
+            }
+            @keyframes rippleRing {
+                0%,
+                100% {
+                    width: 34px;
+                    height: 34px;
+                    opacity: 0.5;
+                }
+                50% {
+                    width: 46px;
+                    height: 46px;
+                    opacity: 0;
+                }
+            }
+            .node-label {
+                margin-top: 0;
+                text-align: left;
+                max-width: none;
+                font-size: 0.78rem;
+                opacity: 0.8;
+            }
+            .node-dot.completed::after {
+                font-size: 8px;
+            }
+            .status-card {
+                padding: 16px 20px;
+                border-radius: 16px;
+            }
+            .status-card .status-text {
+                font-size: 0.85rem;
+            }
+            .guide-banner {
+                font-size: 0.8rem;
+                padding: 10px 14px;
+            }
+        }
+        @media (max-width: 380px) {
+            .main-container {
+                padding: 24px 14px 20px;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            .nodes-row {
+                padding-left: 30px;
+            }
+            .vertical-track,
+            .vertical-track-fill {
+                left: 12px;
+            }
+            .node-group {
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .node-label {
+                font-size: 0.7rem;
+            }
+            .node-dot {
+                width: 18px;
+                height: 18px;
+            }
+            .node-dot.current {
+                width: 26px;
+                height: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars-layer" id="starsLayer" aria-hidden="true"></div>
+    <div class="hearts-layer" id="heartsLayer" aria-hidden="true"></div>
+
+    <main class="main-container">
+        <!-- 引导提示 -->
+        <div class="guide-banner" id="guideBanner">
+            <div class="guide-text">
+                <span class="guide-emoji">💬</span>
+                <span>Click on any stage to see what Leah says</span>
+            </div>
+            <button class="guide-close" id="guideClose" aria-label="Close hint">&times;</button>
+        </div>
+
+        <div class="header">
+            <p class="pretitle">✦ My Journey ✦</p>
+            <h1>Getting Closer to <span class="name-leah">Leah</span></h1>
+            <p class="subtitle">Every step brings us closer</p>
+        </div>
+
+        <div class="percentage-display">
+            <span class="percentage-number" id="percentageNum">83%</span>
+            <span class="percentage-label">of the way to her heart</span>
+        </div>
+
+        <div class="progress-wrapper" id="progressWrapper">
+            <div class="track-full" aria-hidden="true"></div>
+            <div class="track-progress" id="trackProgress" style="width: 80%;" aria-hidden="true"></div>
+            <div class="vertical-track" aria-hidden="true"></div>
+            <div class="vertical-track-fill" id="verticalTrackFill" style="height: 80%;" aria-hidden="true"></div>
+            <div class="nodes-row" id="nodesRow"></div>
+        </div>
+
+        <div class="status-card" id="statusCard">
+            <div class="status-emoji">💕</div>
+            <p class="status-text">
+                Current stage: <span class="status-highlight" id="statusLabel">Exclusive Dating with Leah</span>
+            </p>
+        </div>
+    </main>
+
+    <!-- 反馈弹窗 -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-popup">
+            <button class="feedback-close" id="feedbackClose">&times;</button>
+            <span class="feedback-emoji" id="feedbackEmoji"></span>
+            <p class="feedback-message" id="feedbackMessage"></p>
+            <p class="feedback-hint">Click anywhere or ✕ to close</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- 阶段数据 ----------
+            const stages = [
+                { id: 0, label: 'Talking with Leah', emoji: '💬', shortLabel: 'Talking' },
+                { id: 1, label: 'Seeing Leah', emoji: '👀', shortLabel: 'Seeing' },
+                { id: 2, label: 'Hangout with Leah', emoji: '☕', shortLabel: 'Hangout' },
+                { id: 3, label: 'Dating with Leah', emoji: '🌹', shortLabel: 'Dating' },
+                { id: 4, label: 'Exclusive Dating with Leah', emoji: '💕', shortLabel: 'Exclusive' },
+                { id: 5, label: 'Go into Relationship with Leah', emoji: '💖', shortLabel: 'Relationship' },
+            ];
+
+            // ---------- 英文反馈内容 ----------
+            const feedbacks = {
+                0: { message: 'Really?', emoji: '😏' },
+                1: { message: 'Is your sensor broken or something?', emoji: '🤨' },
+                2: { message: 'I can hang out with many people at the same time, you know.', emoji: '😏' },
+                3: { message: 'Is that enough for you?', emoji: '🤔' },
+                4: { message: 'I thought we already were, aren\'t we?', emoji: '😌' },
+                5: { message: 'She won\'t find out, don\'t worry. Or… do you want her to know?', emoji: '😈' }
+            };
+
+            // 当前进度设置 (可修改 currentStageIndex 0~5)
+            const currentStageIndex = 4;
+            const totalStages = stages.length;
+            const progressPercent = (currentStageIndex / (totalStages - 1)) * 100;
+            const displayPercent = Math.round(progressPercent);
+
+            // 更新百分比和状态卡片
+            document.getElementById('percentageNum').textContent = displayPercent + '%';
+            document.getElementById('statusLabel').textContent = stages[currentStageIndex].label;
+            document.getElementById('statusCard').querySelector('.status-emoji').textContent = stages[currentStageIndex].emoji;
+
+            // 生成节点
+            const nodesRow = document.getElementById('nodesRow');
+            stages.forEach((stage, index) => {
+                const group = document.createElement('div');
+                group.classList.add('node-group');
+                let dotClass = '';
+                let groupExtra = '';
+                if (index < currentStageIndex) {
+                    dotClass = 'completed';
+                    groupExtra = 'completed-group';
+                } else if (index === currentStageIndex) {
+                    dotClass = 'current';
+                    groupExtra = 'current-group';
+                } else {
+                    dotClass = 'pending';
+                }
+                if (groupExtra) group.classList.add(groupExtra);
+
+                const dot = document.createElement('div');
+                dot.classList.add('node-dot', dotClass);
+                dot.setAttribute('aria-label', stage.label);
+                dot.title = stage.label;
+
+                const label = document.createElement('span');
+                label.classList.add('node-label');
+                label.textContent = stage.label;
+
+                group.appendChild(dot);
+                group.appendChild(label);
+                group.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showFeedback(index);
+                    // 点击任意节点后自动隐藏引导提示
+                    hideGuideBanner();
+                });
+                nodesRow.appendChild(group);
+            });
+
+            // 轨道进度动画
+            const trackProgress = document.getElementById('trackProgress');
+            const verticalTrackFill = document.getElementById('verticalTrackFill');
+            trackProgress.style.width = progressPercent + '%';
+            verticalTrackFill.style.height = progressPercent + '%';
+            setTimeout(() => {
+                trackProgress.style.transition = 'none';
+                verticalTrackFill.style.transition = 'none';
+                trackProgress.style.width = '0%';
+                verticalTrackFill.style.height = '0%';
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        trackProgress.style.transition = 'width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                        verticalTrackFill.style.transition = 'height 1.2s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                        trackProgress.style.width = progressPercent + '%';
+                        verticalTrackFill.style.height = progressPercent + '%';
+                    });
+                });
+            }, 300);
+
+            // ---------- 引导提示逻辑 ----------
+            const guideBanner = document.getElementById('guideBanner');
+            const guideClose = document.getElementById('guideClose');
+
+            function hideGuideBanner() {
+                if (!guideBanner.classList.contains('hidden')) {
+                    guideBanner.classList.add('hidden');
+                }
+            }
+
+            guideClose.addEventListener('click', hideGuideBanner);
+
+            // ---------- 反馈弹窗 ----------
+            const overlay = document.getElementById('feedbackOverlay');
+            const feedbackEmoji = document.getElementById('feedbackEmoji');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const closeBtn = document.getElementById('feedbackClose');
+
+            function showFeedback(stageIndex) {
+                const fb = feedbacks[stageIndex];
+                if (!fb) return;
+                feedbackEmoji.textContent = fb.emoji || '';
+                feedbackMessage.textContent = fb.message;
+                overlay.classList.add('active');
+            }
+
+            function hideFeedback() {
+                overlay.classList.remove('active');
+            }
+
+            closeBtn.addEventListener('click', hideFeedback);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) hideFeedback();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                    hideFeedback();
+                }
+            });
+
+            // 悬停预览（保留）
+            const allNodeGroups = document.querySelectorAll('.node-group');
+            const statusEmojiEl = document.getElementById('statusCard').querySelector('.status-emoji');
+            const statusLabelEl = document.getElementById('statusLabel');
+            allNodeGroups.forEach((group, index) => {
+                group.addEventListener('mouseenter', () => {
+                    statusEmojiEl.textContent = stages[index].emoji;
+                    statusLabelEl.textContent = stages[index].label;
+                });
+                group.addEventListener('mouseleave', () => {
+                    statusEmojiEl.textContent = stages[currentStageIndex].emoji;
+                    statusLabelEl.textContent = stages[currentStageIndex].label;
+                });
+            });
+
+            // 星空生成
+            const starsLayer = document.getElementById('starsLayer');
+            const starFrag = document.createDocumentFragment();
+            for (let i = 0; i < 90; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--dur', (Math.random() * 4 + 2.5) + 's');
+                star.style.setProperty('--delay', (Math.random() * 5) + 's');
+                star.style.backgroundColor = Math.random() < 0.3 ? 'rgba(255,200,220,0.9)' : 'rgba(255,255,255,0.75)';
+                starFrag.appendChild(star);
+            }
+            starsLayer.appendChild(starFrag);
+
+            // 飘落爱心
+            const heartsLayer = document.getElementById('heartsLayer');
+            const heartFrag = document.createDocumentFragment();
+            const heartChars = ['♥', '🩷', '💗', '💖', '💕', '✨', '💫', '🕊️'];
+            for (let i = 0; i < 18; i++) {
+                const heart = document.createElement('span');
+                heart.classList.add('falling-heart');
+                heart.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+                const size = Math.random() * 14 + 10;
+                heart.style.setProperty('--size', size + 'px');
+                heart.style.setProperty('--fall-dur', (Math.random() * 10 + 10) + 's');
+                heart.style.setProperty('--fall-delay', (Math.random() * 12) + 's');
+                heart.style.left = Math.random() * 94 + '%';
+                const opacityBase = Math.random() * 0.45 + 0.3;
+                heart.style.setProperty('--heart-color',
+                    `rgba(255,${Math.floor(Math.random()*60+140)},${Math.floor(Math.random()*40+170)},${opacityBase})`
+                );
+                heartFrag.appendChild(heart);
+            }
+            heartsLayer.appendChild(heartFrag);
+
+            // 视差效果
+            const mainContainer = document.querySelector('.main-container');
+            document.addEventListener('mousemove', function(e) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 6;
+                const y = (e.clientY / window.innerHeight - 0.5) * 6;
+                mainContainer.style.transform = `translate(${x * 0.4}px, ${y * 0.4}px)`;
+                mainContainer.style.transition = 'transform 0.8s ease-out';
+            });
+            document.addEventListener('mouseleave', function() {
+                mainContainer.style.transform = 'translate(0px, 0px)';
+                mainContainer.style.transition = 'transform 1s ease-out';
+            });
+
+            console.log('💖 Interactive page ready — click any stage to see Leah\'s response');
+        })();
+    </script>
+</body>
+</html>
